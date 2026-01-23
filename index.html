@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Eletivas - EE João Roberto Moreira</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-screen" class="hidden">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p id="loading-text">Carregando dados...</p>
+        </div>
+    </div>
+
+    <div id="message-modal" class="banner-sobre hidden">
+        <div class="banner-content" style="text-align: center; max-width: 400px;">
+            <div id="message-icon" style="font-size: 3rem; margin-bottom: 15px;"></div>
+            <h3 id="message-title" style="margin-bottom: 10px;"></h3>
+            <p id="message-text" style="margin-bottom: 20px; color: #666;"></p>
+            <button id="btn-message-ok" class="btn-primary">OK</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <div id="login-screen" class="screen">
+            <div class="login-box">
+                <img src="imagens/brasao.png" alt="Brasão" class="brasao">
+                <h2>Portal de Eletivas</h2>
+                <label for="serieAluno">Série</label>
+                <select id="serieAluno" class="input-edit">
+                    <option value="">Selecione sua série</option>
+                    <option value="9A">9º Ano A</option>
+                    <option value="1A">1ª Série A</option>
+                    <option value="1B">1ª Série B</option>
+                    <option value="1C">1ª Série C</option>
+                    <option value="2A">2ª Série A</option>
+                    <option value="2B">2ª Série B</option>
+                    <option value="3A">3ª Série A</option>
+                    <option value="3B">3ª Série B</option>
+                </select>
+
+                <label for="nomeAluno">Seu Nome</label>
+                <select id="nomeAluno" class="input-edit" disabled>
+                    <option value="">Selecione a série primeiro</option>
+                </select>
+
+                <button id="entrar-btn" class="btn-primary">Entrar →</button>
+                <p id="login-error" class="error"></p>
+            </div>
+        </div>
+
+        <div id="main-screen" class="screen hidden">
+            <h2 id="welcome"></h2>
+            <div id="status-aluno" class="input-edit"></div>
+            <div id="eletivas-list" class="eletivas-grid"></div>
+        </div>
+
+        <div id="sobre-banner" class="banner-sobre hidden">
+            <div class="banner-content">
+                <h2 id="sobre-nome"></h2>
+                <p id="sobre-descricao"></p>
+                <p id="sobre-prof"></p>
+                <p id="sobre-vagas"></p>
+
+                <div id="admin-view-lista" class="hidden">
+                    <h3>👥 Alunos Inscritos:</h3>
+                    <ul id="lista-alunos-inscritos"></ul>
+                    <button id="btn-imprimir" class="btn-secondary">🖨️ Imprimir Lista</button>
+                </div>
+
+                <div class="modal-footer" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                    <button id="btn-inscrever-confirmar" class="btn-primary">Confirmar Escolha ✓</button>
+                    <button id="fechar-sobre" class="btn-secondary">Voltar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="banner-sobre hidden">
+            <div class="banner-content">
+                <h2>⚙️ Painel de Gestão</h2>
+                <div id="adm-vagas-status"></div>
+                <hr>
+                <h3>Cadastrar Nova Eletiva</h3>
+                <input type="text" id="adm-nome" class="input-edit" placeholder="Nome da Eletiva">
+                <textarea id="adm-desc" class="input-edit" placeholder="Descrição"></textarea>
+                <input type="text" id="adm-prof" class="input-edit" placeholder="Professor">
+                <input type="number" id="adm-vagas" class="input-edit" placeholder="Qtd Vagas">
+                <input type="text" id="adm-img" class="input-edit" placeholder="Link da Imagem ou Emoji">
+                
+                <button id="btn-salvar-eletiva" class="btn-primary">Salvar Eletiva</button>
+                <button id="fechar-admin" class="btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
