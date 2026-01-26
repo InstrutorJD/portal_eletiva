@@ -9,49 +9,111 @@ function mostrarCarregando(texto = "Carregando...") {
     document.getElementById('loading-screen').classList.remove('hidden');
 }
 
-function esconderCarregando() {
-    document.getElementById('loading-screen').classList.add('hidden');
-}
-
-function exibirMensagem(titulo, texto, tipo = 'sucesso', callback = null) {
-    const modal = document.getElementById('message-modal');
-    document.getElementById('message-icon').textContent = tipo === 'sucesso' ? "✅" : "⚠️";
-    document.getElementById('message-title').textContent = titulo;
-    document.getElementById('message-title').style.color = tipo === 'sucesso' ? "#2e7d32" : "#d32f2f";
-    document.getElementById('message-text').textContent = texto;
-    modal.classList.remove('hidden');
-    document.getElementById('btn-message-ok').onclick = () => {
-        modal.classList.add('hidden');
-        if (callback) callback();
-    };
-}
 
 // --- FUNÇÕES DE CARREGAMENTO ---
-document.getElementById('serieAluno').addEventListener('change', async (e) => {
-    const serie = e.target.value;
-    const nomeSelect = document.getElementById('nomeAluno');
-    if (!serie) return;
-    nomeSelect.innerHTML = "<option>Carregando nomes...</option>";
-    mostrarCarregando("Carregando nomes de alunos...");
-    try {
-        const resp = await fetch(`${URL_API}?action=getAlunos&serie=${serie}`);
-        const alunos = await resp.json();
-        nomeSelect.innerHTML = '<option value="">Selecione seu nome</option>';
-        alunos.forEach(a => {
-            let opt = document.createElement('option');
-            opt.value = a.nome;
-            opt.dataset.eletiva = a.eletiva || "";
-            opt.textContent = a.nome;
-            nomeSelect.appendChild(opt);
-        });
-        nomeSelect.disabled = false;
-    } catch (err) { exibirMensagem("Erro", "Falha ao carregar alunos.", "erro"); }
-    finally { esconderCarregando(); }
-});
 
 document.getElementById('entrar-btn').onclick = () => {
     const sel = document.getElementById('nomeAluno');
     if (!sel.value) return exibirMensagem("Atenção", "Selecione seu nome!", "erro");
+
+// --- FUNÇÕES ADMINISTRATIVAS E UTILITÁRIAS (ESCOPO GLOBAL) ---
+function adicionarBotaoAdmin() {
+    if (!isAdmin) return;
+    if (document.getElementById('abrir-admin-btn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'abrir-admin-btn';
+    btn.className = 'btn-secondary';
+    btn.textContent = '⚙️ Painel de Gestão';
+    btn.style.margin = '20px 0 0 0';
+    btn.onclick = () => abrirPainelAdmin();
+    document.getElementById('main-screen').prepend(btn);
+}
+
+function abrirPainelAdmin() {
+    document.getElementById('admin-panel').classList.remove('hidden');
+}
+
+function fecharPainelAdmin() {
+    document.getElementById('admin-panel').classList.add('hidden');
+    limparFormularioEletiva();
+}
+
+function limparFormularioEletiva() {
+    document.getElementById('adm-nome').value = '';
+    document.getElementById('adm-desc').value = '';
+    document.getElementById('adm-prof').value = '';
+    document.getElementById('adm-vagas').value = '';
+    document.getElementById('adm-img').value = '';
+    document.getElementById('btn-salvar-eletiva').textContent = 'Salvar Eletiva';
+    document.getElementById('btn-salvar-eletiva').dataset.editing = '';
+}
+
+async function salvarEletiva() {
+    const nome = document.getElementById('adm-nome').value.trim();
+    const desc = document.getElementById('adm-desc').value.trim();
+    const prof = document.getElementById('adm-prof').value.trim();
+    const vagas = parseInt(document.getElementById('adm-vagas').value);
+    const img = document.getElementById('adm-img').value.trim();
+    if (!nome || !desc || !prof || !vagas || vagas < 1) {
+        exibirMensagem('Atenção', 'Preencha todos os campos corretamente!', 'erro');
+        return;
+    }
+    mostrarCarregando('Salvando eletiva...');
+    try {
+        const editing = document.getElementById('btn-salvar-eletiva').dataset.editing;
+        let action = editing ? 'editarEletiva' : 'criarEletiva';
+        let payload = { action, nome, descricao: desc, professor: prof, vagasTotais: vagas, foto: img };
+        if (editing) payload.nomeAntigo = editing;
+        const resp = await fetch(URL_API, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await resp.json();
+        if (res.status === 'success') {
+            exibirMensagem('Sucesso!', editing ? 'Eletiva editada!' : 'Eletiva criada!', 'sucesso', () => {
+                fecharPainelAdmin();
+                carregarEletivas();
+            });
+        } else {
+            exibirMensagem('Erro', res.message || 'Falha ao salvar.', 'erro');
+        }
+    } catch (e) {
+        exibirMensagem('Erro', 'Erro ao salvar.', 'erro');
+    } finally {
+        esconderCarregando();
+    }
+}
+
+function editarEletiva(eletiva) {
+    document.getElementById('adm-nome').value = eletiva.nome;
+    document.getElementById('adm-desc').value = eletiva.descricao;
+    document.getElementById('adm-prof').value = eletiva.professor;
+    document.getElementById('adm-vagas').value = eletiva.vagasTotais;
+    document.getElementById('adm-img').value = eletiva.foto || '';
+    document.getElementById('btn-salvar-eletiva').textContent = 'Salvar Alterações';
+    document.getElementById('btn-salvar-eletiva').dataset.editing = eletiva.nome;
+    abrirPainelAdmin();
+}
+
+function removerEletiva(eletiva) {
+    exibirConfirmacao('Remover Eletiva', `Deseja remover a eletiva "${eletiva.nome}"?`, async () => {
+        mostrarCarregando('Removendo eletiva...');
+        try {
+            const resp = await fetch(URL_API, { method: 'POST', body: JSON.stringify({ action: 'removerEletiva', nome: eletiva.nome }) });
+            const res = await resp.json();
+            if (res.status === 'success') {
+                exibirMensagem('Removida', 'Eletiva removida com sucesso!', 'sucesso', carregarEletivas);
+            } else {
+                exibirMensagem('Erro', res.message || 'Falha ao remover.', 'erro');
+            }
+        } catch (e) {
+            exibirMensagem('Erro', 'Erro ao remover.', 'erro');
+        } finally {
+            esconderCarregando();
+        }
+    }, null);
+}
+
+// Eventos do painel admin
+document.getElementById('btn-salvar-eletiva').onclick = salvarEletiva;
+document.getElementById('fechar-admin').onclick = fecharPainelAdmin;
     isAdmin = false;
     alunoAtual = { 
         nome: sel.value, 
@@ -85,9 +147,64 @@ async function carregarEletivas() {
                 ? `<img src="${el.foto}" class="img-eletiva">` : `<div class="emoji-eletiva">${el.foto || '📘'}</div>`;
             card.innerHTML = `${visual}<strong>${el.nome}</strong><div>${el.vagasRestantes} vagas</div>`;
             card.onclick = () => abrirDetalhes(el);
+            // Botões editar/remover (apenas admin)
+            if (isAdmin) {
+                const btns = document.createElement('div');
+                btns.style.marginTop = '10px';
+                btns.style.display = 'flex';
+                btns.style.gap = '8px';
+                const btnEdit = document.createElement('button');
+                btnEdit.textContent = '✏️ Editar';
+                btnEdit.className = 'btn-secondary';
+                btnEdit.onclick = (ev) => {
+                    ev.stopPropagation();
+                    editarEletiva(el);
+                };
+                const btnRem = document.createElement('button');
+                btnRem.textContent = '🗑️ Remover';
+                btnRem.className = 'btn-danger';
+                btnRem.onclick = (ev) => {
+                    ev.stopPropagation();
+                    removerEletiva(el);
+                };
+                btns.appendChild(btnEdit);
+                btns.appendChild(btnRem);
+                card.appendChild(btns);
+            }
             list.appendChild(card);
         });
     } finally { esconderCarregando(); }
+// Editar eletiva: preenche formulário e abre painel
+function editarEletiva(eletiva) {
+    document.getElementById('adm-nome').value = eletiva.nome;
+    document.getElementById('adm-desc').value = eletiva.descricao;
+    document.getElementById('adm-prof').value = eletiva.professor;
+    document.getElementById('adm-vagas').value = eletiva.vagasTotais;
+    document.getElementById('adm-img').value = eletiva.foto || '';
+    document.getElementById('btn-salvar-eletiva').textContent = 'Salvar Alterações';
+    document.getElementById('btn-salvar-eletiva').dataset.editing = eletiva.nome;
+    abrirPainelAdmin();
+}
+
+// Remover eletiva
+function removerEletiva(eletiva) {
+    exibirConfirmacao('Remover Eletiva', `Deseja remover a eletiva "${eletiva.nome}"?`, async () => {
+        mostrarCarregando('Removendo eletiva...');
+        try {
+            const resp = await fetch(URL_API, { method: 'POST', body: JSON.stringify({ action: 'removerEletiva', nome: eletiva.nome }) });
+            const res = await resp.json();
+            if (res.status === 'success') {
+                exibirMensagem('Removida', 'Eletiva removida com sucesso!', 'sucesso', carregarEletivas);
+            } else {
+                exibirMensagem('Erro', res.message || 'Falha ao remover.', 'erro');
+            }
+        } catch (e) {
+            exibirMensagem('Erro', 'Erro ao remover.', 'erro');
+        } finally {
+            esconderCarregando();
+        }
+    }, null);
+}
 }
 
 async function abrirDetalhes(el) {

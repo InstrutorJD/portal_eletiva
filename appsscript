@@ -1,0 +1,77 @@
+const SS = SpreadsheetApp.getActiveSpreadsheet();
+
+function doGet(e) {
+  const action = e.parameter.action;
+  if (action === "getAlunos") {
+    const dados = SS.getSheetByName("Alunos").getDataRange().getValues();
+    return response(dados.filter(r => r[1] === e.parameter.serie).map(r => ({nome: r[0], eletiva: r[2]})));
+  }
+  if (action === "getEletivas") {
+    const elts = SS.getSheetByName("Config_Eletivas").getDataRange().getValues();
+    const alns = SS.getSheetByName("Alunos").getDataRange().getValues();
+    return response(elts.slice(1).map(r => ({
+      nome: r[0], descricao: r[1], professor: r[2], vagasTotais: r[3], foto: r[4],
+      vagasRestantes: r[3] - alns.filter(a => a[2] === r[0]).length
+    })));
+  }
+  if (action === "getInscritosPorEletiva") {
+  const eletivaNome = e.parameter.eletiva;
+  const abaAlunos = SS.getSheetByName("Alunos");
+  const dados = abaAlunos.getDataRange().getValues();
+  // Retorna alunos onde a coluna C (índice 2) é igual à eletiva
+  const inscritos = dados.filter(r => r[2] === eletivaNome).map(r => ({
+    nome: r[0],
+    serie: r[1]
+  }));
+  return response(inscritos);
+}
+}
+
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  if (data.action === "registrarInscricao") {
+    const aba = SS.getSheetByName("Alunos");
+    const dados = aba.getDataRange().getValues();
+    for (let i = 1; i < dados.length; i++) {
+      if (dados[i][0] === data.nome && dados[i][1] === data.serie) {
+        aba.getRange(i+1, 3).setValue(data.novaEletiva);
+        aba.getRange(i+1, 4).setValue(new Date());
+        return response({status: "success"});
+      }
+    }
+  }
+  if (data.action === "criarEletiva") {
+    SS.getSheetByName("Config_Eletivas").appendRow([
+      data.nome, data.descricao, data.professor, data.vagasTotais, data.foto
+    ]);
+    return response({status: "success"});
+  }
+
+  if (data.action === "editarEletiva") {
+    const aba = SS.getSheetByName("Config_Eletivas");
+    const dados = aba.getDataRange().getValues();
+    for (let i = 1; i < dados.length; i++) {
+      if (dados[i][0] === data.nomeAntigo) {
+        aba.getRange(i+1, 1, 1, 5).setValues([[data.nome, data.descricao, data.professor, data.vagasTotais, data.foto]]);
+        return response({status: "success"});
+      }
+    }
+    return response({status: "not_found"});
+  }
+
+  if (data.action === "removerEletiva") {
+    const aba = SS.getSheetByName("Config_Eletivas");
+    const dados = aba.getDataRange().getValues();
+    for (let i = 1; i < dados.length; i++) {
+      if (dados[i][0] === data.nome) {
+        aba.deleteRow(i+1);
+        return response({status: "success"});
+      }
+    }
+    return response({status: "not_found"});
+  }
+}
+
+function response(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
