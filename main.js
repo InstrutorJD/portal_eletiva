@@ -1,3 +1,25 @@
+// Carregar nomes dos alunos ao selecionar a série
+document.getElementById('serieAluno').addEventListener('change', async (e) => {
+    const serie = e.target.value;
+    const nomeSelect = document.getElementById('nomeAluno');
+    if (!serie) return;
+    nomeSelect.innerHTML = "<option>Carregando nomes...</option>";
+    mostrarCarregando("Carregando nomes de alunos...");
+    try {
+        const resp = await fetch(`${URL_API}?action=getAlunos&serie=${serie}`);
+        const alunos = await resp.json();
+        nomeSelect.innerHTML = '<option value="">Selecione seu nome</option>';
+        alunos.forEach(a => {
+            let opt = document.createElement('option');
+            opt.value = a.nome;
+            opt.dataset.eletiva = a.eletiva || "";
+            opt.textContent = a.nome;
+            nomeSelect.appendChild(opt);
+        });
+        nomeSelect.disabled = false;
+    } catch (err) { exibirMensagem("Erro", "Falha ao carregar alunos.", "erro"); }
+    finally { esconderCarregando(); }
+});
 const URL_API = "https://script.google.com/macros/s/AKfycbx9B2XwiCyrWFslC73yI28QXme-qrlEpY9fDoTCO--0I_I9DK9BfOvLbAE7p-Bx2b05/exec"; // Atualize com a URL do passo acima
 let alunoAtual = { nome: "", serie: "", eletivaInscrita: "" };
 let eletivasCache = [];
