@@ -1,4 +1,4 @@
-const URL_API = "https://script.google.com/macros/s/AKfycbwlrDaJ1NpVhVmnnFM7RQGcfNrUL6fv0cZHOwKLLY-RRtVbSURRYHfdMNiOSYOwzoZr/exec"; // Atualize com a URL do passo acima
+const URL_API = "https://script.google.com/macros/s/AKfycbx9B2XwiCyrWFslC73yI28QXme-qrlEpY9fDoTCO--0I_I9DK9BfOvLbAE7p-Bx2b05/exec"; // Atualize com a URL do passo acima
 let alunoAtual = { nome: "", serie: "", eletivaInscrita: "" };
 let eletivasCache = [];
 let isAdmin = false;
