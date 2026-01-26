@@ -4,8 +4,22 @@ function mostrarCarregando(texto = "Carregando...") {
     document.getElementById('loading-screen').classList.remove('hidden');
 }
 
+
 function esconderCarregando() {
     document.getElementById('loading-screen').classList.add('hidden');
+}
+
+function exibirMensagem(titulo, texto, tipo = 'sucesso', callback = null) {
+    const modal = document.getElementById('message-modal');
+    document.getElementById('message-icon').textContent = tipo === 'sucesso' ? "✅" : "⚠️";
+    document.getElementById('message-title').textContent = titulo;
+    document.getElementById('message-title').style.color = tipo === 'sucesso' ? "#2e7d32" : "#d32f2f";
+    document.getElementById('message-text').textContent = texto;
+    modal.classList.remove('hidden');
+    document.getElementById('btn-message-ok').onclick = () => {
+        modal.classList.add('hidden');
+        if (callback) callback();
+    };
 }
 
 // Carregar nomes dos alunos ao selecionar a série
