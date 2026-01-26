@@ -1,3 +1,13 @@
+// --- FEEDBACK VISUAL E MODAIS ---
+function mostrarCarregando(texto = "Carregando...") {
+    document.getElementById('loading-text').textContent = texto;
+    document.getElementById('loading-screen').classList.remove('hidden');
+}
+
+function esconderCarregando() {
+    document.getElementById('loading-screen').classList.add('hidden');
+}
+
 // Carregar nomes dos alunos ao selecionar a série
 document.getElementById('serieAluno').addEventListener('change', async (e) => {
     const serie = e.target.value;
