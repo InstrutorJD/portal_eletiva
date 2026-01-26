@@ -176,6 +176,7 @@ function irParaMain(titulo) {
     const status = document.getElementById('status-aluno');
     status.textContent = isAdmin ? "Modo Administrador" : (alunoAtual.eletivaInscrita ? `Sua eletiva: ${alunoAtual.eletivaInscrita}` : "Escolha sua eletiva.");
     status.style.background = isAdmin ? "#e3f2fd" : (alunoAtual.eletivaInscrita ? "#c8e6c9" : "#ffecb3");
+    if (isAdmin) adicionarBotaoAdmin();
     carregarEletivas();
 }
 
