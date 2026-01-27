@@ -58,9 +58,16 @@ function mostrarCarregando(texto = "Carregando...") {
 
 // --- FUNÇÕES DE CARREGAMENTO ---
 
-document.getElementById('entrar-btn').onclick = () => {
     const sel = document.getElementById('nomeAluno');
     if (!sel.value) return exibirMensagem("Atenção", "Selecione seu nome!", "erro");
+    isAdmin = false;
+    alunoAtual = { 
+        nome: sel.value, 
+        serie: document.getElementById('serieAluno').value, 
+        eletivaInscrita: sel.options[sel.selectedIndex].dataset.eletiva 
+    };
+    irParaMain(`Bem-vindo(a), ${alunoAtual.nome}!`);
+
 
 // --- FUNÇÕES ADMINISTRATIVAS E UTILITÁRIAS (ESCOPO GLOBAL) ---
 function adicionarBotaoAdmin() {
@@ -85,96 +92,47 @@ function fecharPainelAdmin() {
 }
 
 function limparFormularioEletiva() {
+    document.getElementById('adm-nome').value = '';
+    document.getElementById('adm-desc').value = '';
+    document.getElementById('adm-prof').value = '';
+    document.getElementById('adm-vagas').value = '';
+    document.getElementById('adm-img').value = '';
+    document.getElementById('btn-salvar-eletiva').textContent = 'Salvar Eletiva';
+    document.getElementById('btn-salvar-eletiva').dataset.editing = '';
+}
 
-    // --- FUNÇÕES ADMINISTRATIVAS E UTILITÁRIAS (ESCOPO GLOBAL) ---
-    function adicionarBotaoAdmin() {
-        if (!isAdmin) return;
-        if (document.getElementById('abrir-admin-btn')) return;
-        const btn = document.createElement('button');
-        btn.id = 'abrir-admin-btn';
-        btn.className = 'btn-secondary';
-        btn.textContent = '⚙️ Painel de Gestão';
-        btn.style.margin = '20px 0 0 0';
-        btn.onclick = () => abrirPainelAdmin();
-        document.getElementById('main-screen').prepend(btn);
+async function salvarEletiva() {
+    const nome = document.getElementById('adm-nome').value.trim();
+    const desc = document.getElementById('adm-desc').value.trim();
+    const prof = document.getElementById('adm-prof').value.trim();
+    const vagas = parseInt(document.getElementById('adm-vagas').value);
+    const img = document.getElementById('adm-img').value.trim();
+    if (!nome || !desc || !prof || !vagas || vagas < 1) {
+        exibirMensagem('Atenção', 'Preencha todos os campos corretamente!', 'erro');
+        return;
     }
-
-    function abrirPainelAdmin() {
-        document.getElementById('admin-panel').classList.remove('hidden');
+    mostrarCarregando('Salvando eletiva...');
+    try {
+        const editing = document.getElementById('btn-salvar-eletiva').dataset.editing;
+        let action = editing ? 'editarEletiva' : 'criarEletiva';
+        let payload = { action, nome, descricao: desc, professor: prof, vagasTotais: vagas, foto: img };
+        if (editing) payload.nomeAntigo = editing;
+        const resp = await fetch(URL_API, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await resp.json();
+        if (res.status === 'success') {
+            exibirMensagem('Sucesso!', editing ? 'Eletiva editada!' : 'Eletiva criada!', 'sucesso', () => {
+                fecharPainelAdmin();
+                carregarEletivas();
+            });
+        } else {
+            exibirMensagem('Erro', res.message || 'Falha ao salvar.', 'erro');
+        }
+    } catch (e) {
+        exibirMensagem('Erro', 'Erro ao salvar.', 'erro');
+    } finally {
+        esconderCarregando();
     }
-
-    function fecharPainelAdmin() {
-        document.getElementById('admin-panel').classList.add('hidden');
-        limparFormularioEletiva();
-    }
-
-    function limparFormularioEletiva() {
-
-        // --- FUNÇÕES ADMINISTRATIVAS E UTILITÁRIAS (ESCOPO GLOBAL) ---
-        function adicionarBotaoAdmin() {
-            if (!isAdmin) return;
-            if (document.getElementById('abrir-admin-btn')) return;
-            const btn = document.createElement('button');
-            btn.id = 'abrir-admin-btn';
-            btn.className = 'btn-secondary';
-            btn.textContent = '⚙️ Painel de Gestão';
-            btn.style.margin = '20px 0 0 0';
-            btn.onclick = () => abrirPainelAdmin();
-            document.getElementById('main-screen').prepend(btn);
-        }
-
-        function abrirPainelAdmin() {
-            document.getElementById('admin-panel').classList.remove('hidden');
-        }
-
-        function fecharPainelAdmin() {
-            document.getElementById('admin-panel').classList.add('hidden');
-            limparFormularioEletiva();
-        }
-
-        function limparFormularioEletiva() {
-            document.getElementById('adm-nome').value = '';
-            document.getElementById('adm-desc').value = '';
-            document.getElementById('adm-prof').value = '';
-            document.getElementById('adm-vagas').value = '';
-            document.getElementById('adm-img').value = '';
-            document.getElementById('btn-salvar-eletiva').textContent = 'Salvar Eletiva';
-            document.getElementById('btn-salvar-eletiva').dataset.editing = '';
-        }
-
-        async function salvarEletiva() {
-            const nome = document.getElementById('adm-nome').value.trim();
-            const desc = document.getElementById('adm-desc').value.trim();
-            const prof = document.getElementById('adm-prof').value.trim();
-            const vagas = parseInt(document.getElementById('adm-vagas').value);
-            const img = document.getElementById('adm-img').value.trim();
-            if (!nome || !desc || !prof || !vagas || vagas < 1) {
-                exibirMensagem('Atenção', 'Preencha todos os campos corretamente!', 'erro');
-                return;
-            }
-            mostrarCarregando('Salvando eletiva...');
-            try {
-                const editing = document.getElementById('btn-salvar-eletiva').dataset.editing;
-                let action = editing ? 'editarEletiva' : 'criarEletiva';
-                let payload = { action, nome, descricao: desc, professor: prof, vagasTotais: vagas, foto: img };
-                if (editing) payload.nomeAntigo = editing;
-                const resp = await fetch(URL_API, { method: 'POST', body: JSON.stringify(payload) });
-                const res = await resp.json();
-                if (res.status === 'success') {
-                    exibirMensagem('Sucesso!', editing ? 'Eletiva editada!' : 'Eletiva criada!', 'sucesso', () => {
-                        fecharPainelAdmin();
-                        carregarEletivas();
-                    });
-                } else {
-                    exibirMensagem('Erro', res.message || 'Falha ao salvar.', 'erro');
-                }
-            } catch (e) {
-                exibirMensagem('Erro', 'Erro ao salvar.', 'erro');
-            } finally {
-                esconderCarregando();
-            }
-        }
-
+}
 async function carregarEletivas() {
     mostrarCarregando("Buscando eletivas...");
     try {
@@ -398,6 +356,7 @@ function exibirPromptSenha(titulo, callback) {
     document.getElementById('btn-senha-cancelar').onclick = () => {
         modal.classList.add('hidden');
     };
+
     document.getElementById('senha-input').onkeydown = (ev) => {
         if (ev.key === 'Enter') document.getElementById('btn-senha-ok').click();
     };
