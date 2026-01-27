@@ -56,8 +56,10 @@ function mostrarCarregando(texto = "Carregando...") {
 }
 
 
+
 // --- FUNÇÕES DE CARREGAMENTO ---
 
+document.getElementById('entrar-btn').onclick = () => {
     const sel = document.getElementById('nomeAluno');
     if (!sel.value) return exibirMensagem("Atenção", "Selecione seu nome!", "erro");
     isAdmin = false;
@@ -67,6 +69,7 @@ function mostrarCarregando(texto = "Carregando...") {
         eletivaInscrita: sel.options[sel.selectedIndex].dataset.eletiva 
     };
     irParaMain(`Bem-vindo(a), ${alunoAtual.nome}!`);
+};
 
 
 // --- FUNÇÕES ADMINISTRATIVAS E UTILITÁRIAS (ESCOPO GLOBAL) ---
