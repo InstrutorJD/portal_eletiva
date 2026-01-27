@@ -1,3 +1,16 @@
+// Garante que o botão Salvar Eletiva chama a função correta
+document.getElementById('btn-salvar-eletiva').onclick = salvarEletiva;
+// --- TROCA DE TELA PRINCIPAL E STATUS ---
+function irParaMain(titulo) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('main-screen').classList.remove('hidden');
+    document.getElementById('welcome').textContent = titulo;
+    const status = document.getElementById('status-aluno');
+    status.textContent = isAdmin ? "Modo Administrador" : (alunoAtual.eletivaInscrita ? `Sua eletiva: ${alunoAtual.eletivaInscrita}` : "Escolha sua eletiva.");
+    status.style.background = isAdmin ? "#e3f2fd" : (alunoAtual.eletivaInscrita ? "#c8e6c9" : "#ffecb3");
+    if (isAdmin) adicionarBotaoAdmin();
+    carregarEletivas();
+}
 // --- FEEDBACK VISUAL E MODAIS ---
 function mostrarCarregando(texto = "Carregando...") {
     document.getElementById('loading-text').textContent = texto;
