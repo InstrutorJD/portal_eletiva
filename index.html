@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Eletivas - EE João Roberto Moreira</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Emoji Button CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
 </head>
 <body>
     <div id="loading-screen" class="hidden">
@@ -52,8 +54,14 @@
         </div>
 
         <div id="main-screen" class="screen hidden">
-            <h2 id="welcome"></h2>
-            <div id="status-aluno" class="input-edit"></div>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <h2 id="welcome" style="margin-bottom:0;"></h2>
+                <button id="btn-imprimir-todos" class="btn-secondary hidden" style="margin-left:20px; padding:6px 12px; font-size:15px; display:flex; align-items:center; gap:6px; min-width:unset; width:auto;">
+                    <span style="font-size:1.2em;">🖨️</span>
+                    <span style="font-size:14px;">Imprimir Todos</span>
+                </button>
+            </div>
+            <div id="status-aluno" class="status-box"></div>
             <div id="eletivas-list" class="eletivas-grid"></div>
         </div>
 
@@ -64,9 +72,11 @@
                 <p id="sobre-prof" style="font-weight: bold;"></p>
                 <p id="sobre-vagas"></p>
 
+
                 <div id="admin-view-lista" class="hidden">
                     <h3>👥 Alunos Inscritos:</h3>
                     <ul id="lista-alunos-inscritos"></ul>
+                    <button id="btn-imprimir-lista" class="btn-secondary" style="margin-top:10px;">Imprimir Lista</button>
                 </div>
 
                 <div class="modal-footer" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
@@ -78,21 +88,108 @@
 
         <div id="admin-panel" class="banner-sobre hidden">
             <div class="banner-content">
-                <h2>⚙️ Painel de Gestão</h2>
+                <h2>📋 Dados Eletiva</h2>
                 <hr>
                 <h3>Configurar Eletiva</h3>
                 <input type="text" id="adm-nome" class="input-edit" placeholder="Nome da Eletiva (Obrigatório)">
                 <textarea id="adm-desc" class="input-edit" placeholder="Descrição (Obrigatório)"></textarea>
                 <input type="text" id="adm-prof" class="input-edit" placeholder="Professor (Obrigatório)">
-                <input type="number" id="adm-vagas" class="input-edit" placeholder="Qtd Vagas (Obrigatório)">
-                <input type="text" id="adm-img" class="input-edit" placeholder="Emoji ou Link da Imagem (Opcional)">
-                
+                <input type="number" id="adm-vagas" class="input-edit" placeholder="Qtd Vagas (Obrigatório)" min="1" step="1" inputmode="numeric" pattern="[0-9]*">
+                <label for="adm-emoji" style="margin-top:8px;">Emoji da Eletiva (Obrigatório)</label>
+                <select id="adm-emoji" class="input-edit">
+                    <option value="">Selecione um emoji</option>
+                    <option value="📚">📚 Educação</option>
+                    <option value="🧮">🧮 Matemática</option>
+                    <option value="🔢">🔢 Números</option>
+                    <option value="🔬">🔬 Ciências</option>
+                    <option value="🧪">🧪 Química</option>
+                    <option value="🧬">🧬 Biologia</option>
+                    <option value="🧲">🧲 Física</option>
+                    <option value="💻">💻 Computação</option>
+                    <option value="📖">📖 Leitura</option>
+                    <option value="✏️">✏️ Escrita</option>
+                    <option value="📝">📝 Redação</option>
+                    <option value="🎨">🎨 Artes</option>
+                    <option value="🎭">🎭 Teatro</option>
+                    <option value="🎵">🎵 Música</option>
+                    <option value="🎤">🎤 Canto</option>
+                    <option value="🎸">🎸 Instrumentos</option>
+                    <option value="🏀">🏀 Basquete</option>
+                    <option value="⚽">⚽ Futebol</option>
+                    <option value="🏐">🏐 Vôlei</option>
+                    <option value="🏊">🏊 Natação</option>
+                    <option value="🚴">🚴 Ciclismo</option>
+                    <option value="🧘">🧘 Saúde/Bem-estar</option>
+                    <option value="🥗">🥗 Nutrição</option>
+                    <option value="🍎">🍎 Alimentação</option>
+                    <option value="💰">💰 Dinheiro/Finanças</option>
+                    <option value="🏦">🏦 Economia</option>
+                    <option value="🌱">🌱 Meio Ambiente</option>
+                    <option value="🌳">🌳 Natureza</option>
+                    <option value="🌎">🌎 Ecologia</option>
+                    <option value="🧩">🧩 Jogos</option>
+                    <option value="♟️">♟️ Xadrez</option>
+                    <option value="🎮">🎮 Games</option>
+                    <option value="🛠️">🛠️ Maker/Oficina</option>
+                    <option value="🧵">🧵 Costura</option>
+                    <option value="🪡">🪡 Bordado</option>
+                    <option value="🧶">🧶 Tricô</option>
+                    <option value="🍳">🍳 Culinária</option>
+                    <option value="🍰">🍰 Confeitaria</option>
+                    <option value="📷">📷 Fotografia</option>
+                    <option value="🎥">🎥 Vídeo/Cinema</option>
+                    <option value="🚀">🚀 Robótica</option>
+                    <option value="🤖">🤖 Inteligência Artificial</option>
+                    <option value="🦸">🦸 Voluntariado</option>
+                    <option value="🦸‍♀️">🦸‍♀️ Liderança</option>
+                    <option value="🦸‍♂️">🦸‍♂️ Protagonismo</option>
+                    <option value="🗣️">🗣️ Comunicação</option>
+                    <option value="🌐">🌐 Idiomas</option>
+                    <option value="🇧🇷">🇧🇷 Português</option>
+                    <option value="🇬🇧">🇬🇧 Inglês</option>
+                    <option value="🇪🇸">🇪🇸 Espanhol</option>
+                    <option value="🧑‍🔬">🧑‍🔬 Pesquisa</option>
+                    <option value="🧑‍🏫">🧑‍🏫 Ensino</option>
+                    <option value="🧑‍🎨">🧑‍🎨 Criatividade</option>
+                    <option value="🧑‍💻">🧑‍💻 Programação</option>
+                    <option value="🧑‍🍳">🧑‍🍳 Gastronomia</option>
+                    <option value="🧑‍🚀">🧑‍🚀 Espaço</option>
+                    <option value="🧑‍🌾">🧑‍🌾 Agricultura</option>
+                    <option value="🧑‍🎤">🧑‍🎤 Performance</option>
+                </select>
+                </select>
                 <button id="btn-salvar-eletiva" class="btn-primary">Salvar Eletiva</button>
                 <button id="fechar-admin" class="btn-secondary" style="margin-top: 10px;">Fechar</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.EmojiButton) {
+            const button = document.getElementById('btn-emoji-picker');
+            const input = document.getElementById('adm-emoji');
+            if (button && input) {
+                const picker = new EmojiButton({
+                    position: 'bottom-start',
+                    autoHide: false,
+                    showPreview: false,
+                    showSearch: true,
+                    showRecents: true,
+                    theme: 'auto',
+                });
+                button.addEventListener('click', () => {
+                    picker.togglePicker(button);
+                });
+                picker.on('emoji', emoji => {
+                    input.value = emoji;
+                });
+            }
+        }
+    });
+    </script>
 </body>
 </html>

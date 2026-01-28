@@ -9,6 +9,7 @@ function doOptions(e) {
 const SS = SpreadsheetApp.getActiveSpreadsheet();
 
 function doGet(e) {
+  // Adiciona CORS para requisições GET
   const action = e.parameter.action;
   if (action === "getAlunos") {
     const dados = SS.getSheetByName("Alunos").getDataRange().getValues();
@@ -23,19 +24,26 @@ function doGet(e) {
     })));
   }
   if (action === "getInscritosPorEletiva") {
-  const eletivaNome = e.parameter.eletiva;
-  const abaAlunos = SS.getSheetByName("Alunos");
-  const dados = abaAlunos.getDataRange().getValues();
-  // Retorna alunos onde a coluna C (índice 2) é igual à eletiva
-  const inscritos = dados.filter(r => r[2] === eletivaNome).map(r => ({
-    nome: r[0],
-    serie: r[1]
-  }));
-  return response(inscritos);
-}
+    const eletivaNome = e.parameter.eletiva;
+    const abaAlunos = SS.getSheetByName("Alunos");
+    const dados = abaAlunos.getDataRange().getValues();
+    // Retorna alunos onde a coluna C (índice 2) é igual à eletiva
+    const inscritos = dados.filter(r => r[2] === eletivaNome).map(r => ({
+      nome: r[0],
+      serie: r[1]
+    }));
+    return response(inscritos);
+  }
+  // Caso não haja ação, retorna CORS vazio
+  return ContentService.createTextOutput("")
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
 function doPost(e) {
+  // Adiciona CORS para requisições POST
   const data = JSON.parse(e.postData.contents);
   if (data.action === "registrarInscricao") {
     const aba = SS.getSheetByName("Alunos");
@@ -104,6 +112,12 @@ function doPost(e) {
     }
     return response({status: "success"});
   }
+  // Caso não haja ação, retorna CORS vazio
+  return ContentService.createTextOutput("")
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
 function response(obj) {

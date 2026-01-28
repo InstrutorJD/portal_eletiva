@@ -1,3 +1,4 @@
+
 /* Variáveis de Identidade Visual - EE João Roberto Moreira */
 :root {
     --verde-primario: #006400; /* Verde Bandeira */
@@ -159,7 +160,12 @@ button:disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2001;
+}
+
+/* Garante que o modal de mensagem sempre fique acima de todos os outros overlays */
+#message-modal.banner-sobre {
+    z-index: 99999 !important;
 }
 
 .banner-content {
