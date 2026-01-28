@@ -123,8 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Monta HTML para impressão
                 const win = window.open('', '', 'width=900,height=1200');
                 win.document.write('<html><head><title>Lista de Todos os Alunos</title>');
-                win.document.write('<style>body{font-family:sans-serif;padding:30px;}h2{margin-bottom:10px;}h3{margin-top:30px;}ul{font-size:17px;}li{margin-bottom:4px;} .sem-eletiva{color:#c00;}</style>');
+                win.document.write('<style>body{font-family:sans-serif;padding:30px;}h2{margin-bottom:10px;}h3{margin-top:30px;}ul{font-size:17px;}li{margin-bottom:4px;} .sem-eletiva{color:#c00;} .brasao-print{width:110px;display:block;margin:0 auto 18px auto;}</style>');
                 win.document.write('</head><body>');
+                win.document.write('<img src="imagens/brasao.jpeg" alt="Brasão" class="brasao-print">');
                 win.document.write('<h2>Lista de Todos os Alunos por Turma</h2>');
                 turmasOrdenadas.forEach(turma => {
                     win.document.write(`<h3>${turma}</h3><ul>`);
@@ -239,8 +240,9 @@ async function abrirDetalhes(el) {
             btnImprimir.onclick = function() {
                 const win = window.open('', '', 'width=700,height=900');
                 win.document.write('<html><head><title>Lista de Inscritos</title>');
-                win.document.write('<style>body{font-family:sans-serif;padding:30px;}h2{margin-bottom:10px;}ul{font-size:18px;}li{margin-bottom:5px;}</style>');
+                win.document.write('<style>body{font-family:sans-serif;padding:30px;}h2{margin-bottom:10px;}ul{font-size:18px;}li{margin-bottom:5px;} .brasao-print{width:110px;display:block;margin:0 auto 18px auto;}</style>');
                 win.document.write('</head><body>');
+                win.document.write('<img src="imagens/brasao.jpeg" alt="Brasão" class="brasao-print">');
                 win.document.write(`<h2>Inscritos na Eletiva: ${el.nome}</h2>`);
                 win.document.write(`<div style="margin-bottom:15px;font-size:1.1em;"><strong>Professor:</strong> ${el.professor}</div>`);
                 win.document.write('<ul>');
