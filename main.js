@@ -398,7 +398,7 @@ document.addEventListener('keydown', (e) => {
         document.getElementById('input-admin-senha').focus();
         document.getElementById('btn-admin-ok').onclick = () => {
             const pass = document.getElementById('input-admin-senha').value;
-            if(pass === "admin2026") {
+            if(pass === "admin@2026jrm") {
                 isAdmin = true;
                 modal.remove();
                 irParaMain("Gestão do Portal");
