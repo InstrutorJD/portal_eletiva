@@ -28,6 +28,7 @@
             <div class="login-box">
                 <img src="imagens/brasao.png" alt="Brasão" class="brasao">
                 <h2>Portal de Eletivas</h2>
+                
                 <label for="serieAluno">Série</label>
                 <select id="serieAluno" class="input-edit">
                     <option value="">Selecione sua série</option>
@@ -47,7 +48,6 @@
                 </select>
 
                 <button id="entrar-btn" class="btn-primary">Entrar →</button>
-                <p id="login-error" class="error"></p>
             </div>
         </div>
 
@@ -61,13 +61,12 @@
             <div class="banner-content">
                 <h2 id="sobre-nome"></h2>
                 <p id="sobre-descricao"></p>
-                <p id="sobre-prof"></p>
+                <p id="sobre-prof" style="font-weight: bold;"></p>
                 <p id="sobre-vagas"></p>
 
                 <div id="admin-view-lista" class="hidden">
                     <h3>👥 Alunos Inscritos:</h3>
                     <ul id="lista-alunos-inscritos"></ul>
-                    <button id="btn-imprimir" class="btn-secondary">🖨️ Imprimir Lista</button>
                 </div>
 
                 <div class="modal-footer" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
@@ -80,20 +79,20 @@
         <div id="admin-panel" class="banner-sobre hidden">
             <div class="banner-content">
                 <h2>⚙️ Painel de Gestão</h2>
-                <div id="adm-vagas-status"></div>
                 <hr>
-                <h3>Cadastrar Nova Eletiva</h3>
-                <input type="text" id="adm-nome" class="input-edit" placeholder="Nome da Eletiva">
-                <textarea id="adm-desc" class="input-edit" placeholder="Descrição"></textarea>
-                <input type="text" id="adm-prof" class="input-edit" placeholder="Professor">
-                <input type="number" id="adm-vagas" class="input-edit" placeholder="Qtd Vagas">
-                <input type="text" id="adm-img" class="input-edit" placeholder="Link da Imagem ou Emoji">
+                <h3>Configurar Eletiva</h3>
+                <input type="text" id="adm-nome" class="input-edit" placeholder="Nome da Eletiva (Obrigatório)">
+                <textarea id="adm-desc" class="input-edit" placeholder="Descrição (Obrigatório)"></textarea>
+                <input type="text" id="adm-prof" class="input-edit" placeholder="Professor (Obrigatório)">
+                <input type="number" id="adm-vagas" class="input-edit" placeholder="Qtd Vagas (Obrigatório)">
+                <input type="text" id="adm-img" class="input-edit" placeholder="Emoji ou Link da Imagem (Opcional)">
                 
                 <button id="btn-salvar-eletiva" class="btn-primary">Salvar Eletiva</button>
-                <button id="fechar-admin" class="btn-secondary">Fechar</button>
+                <button id="fechar-admin" class="btn-secondary" style="margin-top: 10px;">Fechar</button>
             </div>
         </div>
     </div>
+
     <script src="main.js"></script>
 </body>
 </html>
