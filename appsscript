@@ -1,3 +1,11 @@
+// Tratamento para requisições OPTIONS (CORS preflight)
+function doOptions(e) {
+  return ContentService.createTextOutput("")
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
 const SS = SpreadsheetApp.getActiveSpreadsheet();
 
 function doGet(e) {
@@ -50,30 +58,58 @@ function doPost(e) {
   if (data.action === "editarEletiva") {
     const aba = SS.getSheetByName("Config_Eletivas");
     const dados = aba.getDataRange().getValues();
+    let found = false;
     for (let i = 1; i < dados.length; i++) {
       if (dados[i][0] === data.nomeAntigo) {
         aba.getRange(i+1, 1, 1, 5).setValues([[data.nome, data.descricao, data.professor, data.vagasTotais, data.foto]]);
-        return response({status: "success"});
+        found = true;
+        break;
       }
     }
-    return response({status: "not_found"});
+    if (!found) return response({status: "not_found"});
+
+    // Atualizar informações da eletiva para todos os alunos já inscritos nela
+    const abaAlunos = SS.getSheetByName("Alunos");
+    const dadosAlunos = abaAlunos.getDataRange().getValues();
+    for (let i = 1; i < dadosAlunos.length; i++) {
+      if (dadosAlunos[i][2] === data.nomeAntigo) {
+        // Se o nome da eletiva mudou, atualiza o nome da eletiva do aluno
+        abaAlunos.getRange(i+1, 3).setValue(data.nome);
+        // (Opcional: pode-se adicionar campos extras para descrição/professor se existirem na tabela de alunos)
+      }
+    }
+    return response({status: "success"});
   }
 
   if (data.action === "removerEletiva") {
     const aba = SS.getSheetByName("Config_Eletivas");
     const dados = aba.getDataRange().getValues();
+    let found = false;
     for (let i = 1; i < dados.length; i++) {
       if (dados[i][0] === data.nome) {
         aba.deleteRow(i+1);
-        return response({status: "success"});
+        found = true;
+        break;
       }
     }
-    return response({status: "not_found"});
+    if (!found) return response({status: "not_found"});
+
+    // Limpar campo de eletiva dos alunos inscritos nela
+    const abaAlunos = SS.getSheetByName("Alunos");
+    const dadosAlunos = abaAlunos.getDataRange().getValues();
+    for (let i = 1; i < dadosAlunos.length; i++) {
+      if (dadosAlunos[i][2] === data.nome) {
+        abaAlunos.getRange(i+1, 3).setValue("");
+      }
+    }
+    return response({status: "success"});
   }
 }
 
 function response(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON)
-    .setHeader("Access-Control-Allow-Origin", "*");
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
 }

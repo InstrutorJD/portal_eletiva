@@ -1,4 +1,4 @@
-const URL_API = "https://script.google.com/macros/s/AKfycbxIaMTopxrsRHWdEn3Ap0HT26L0wRb_2jsEVWRYJmX9o8XlHNXpOGpCXCCz2k62MpYq/exec"; // ATUALIZE ESTA URL APÓS A IMPLANTAÇÃO
+const URL_API = "https://script.google.com/macros/s/AKfycbzfI8jA8tuLwnsyUSROwjXtQpQApnnplIoezrCJXCx3KpmYbgy2McRsjnpfZbRs3WJh/exec"; // ATUALIZE ESTA URL APÓS A IMPLANTAÇÃO
 let alunoAtual = { nome: "", serie: "", eletivaInscrita: "" };
 let isAdmin = false;
 
@@ -180,6 +180,8 @@ function exibirConfirmacao(tit, tex, cb) {
     document.body.appendChild(modal);
     document.getElementById('conf-sim').onclick = () => { modal.remove(); cb(); };
     document.getElementById('conf-nao').onclick = () => modal.remove();
+    documento.getElementById('id-user').onclick = () => modal.addEventListener('click', () => { modal.remove(); });
+
 }
 
 function abrirPainelAdmin() { document.getElementById('admin-panel').classList.remove('hidden'); }
@@ -188,7 +190,7 @@ function fecharPainelAdmin() { document.getElementById('admin-panel').classList.
 function adicionarBotaoAdmin() {
     if(document.getElementById('adm-btn-fixo')) return;
     const b = document.createElement('button');
-    b.id = "adm-btn-fixo"; b.className = "btn-primary"; b.textContent = "⚙️ Painel de Gestão";
+    b.id = "adm-btn-fixo"; b.className = "btn-primary"; b.textContent = "⚙️Painel de Gestão";
     b.style.cssText = "position:fixed; bottom:20px; right:20px; width:auto; z-index:100; padding:10px 20px;";
     b.onclick = abrirPainelAdmin;
     document.body.appendChild(b);
