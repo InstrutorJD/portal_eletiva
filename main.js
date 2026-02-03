@@ -190,7 +190,7 @@ async function carregarEletivas() {
 async function abrirDetalhes(el) {
     document.getElementById('sobre-nome').textContent = el.nome;
     document.getElementById('sobre-descricao').textContent = el.descricao;
-    document.getElementById('sobre-prof').textContent = `Professor: ${el.professor}`;
+    document.getElementById('sobre-prof').textContent = `Professor(a): ${el.professor}`;
     document.getElementById('sobre-vagas').textContent = `Vagas: ${el.vagas_restantes}/${el.vagas_totais}`;
 
     const btn = document.getElementById('btn-inscrever-confirmar');
@@ -244,7 +244,7 @@ async function abrirDetalhes(el) {
                 win.document.write('</head><body>');
                 win.document.write('<img src="imagens/brasao.jpeg" alt="Brasão" class="brasao-print">');
                 win.document.write(`<h2>Inscritos na Eletiva: ${el.nome}</h2>`);
-                win.document.write(`<div style="margin-bottom:15px;font-size:1.1em;"><strong>Professor:</strong> ${el.professor}</div>`);
+                win.document.write(`<div style="margin-bottom:15px;font-size:1.1em;"><strong>Professor(a):</strong> ${el.professor}</div>`);
                 win.document.write('<ul>');
                 listaAlunos.querySelectorAll('li').forEach(li => {
                     win.document.write(`<li>${li.textContent}</li>`);
