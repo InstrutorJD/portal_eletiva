@@ -78,7 +78,7 @@ function logar() {
         serie: document.getElementById('serieAluno').value, 
         eletivaInscrita: sel.options[sel.selectedIndex].dataset.eletiva 
     };
-    irParaMain(`Bem-vindo, ${alunoAtual.nome}!`);
+    irParaMain(`Bem vindo(a), ${alunoAtual.nome}!`);
 }
 
 
